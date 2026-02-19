@@ -20,5 +20,12 @@ height=1024
 x=np.linspace(x_min,x_max,width)
 y=np.linspace(y_min,y_max,height)
 
+#creating 2D map of the coordinates
+X,Y=np.meshgrid(x,y)
+
+#make complex numbers
+c= X +1j *Y
+
+
     # TODO: Implement the algorithm
     pass
