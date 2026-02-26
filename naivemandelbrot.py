@@ -32,4 +32,15 @@ for i in range(width):
 for i in range(heigth):
    y.append(ymin+(i*y_step))
 
+#create c=x_val*y_val*1j
+
+C=[]
+
+#outer loop to loop though each imaginary value
+#inner loop to iterate through to real value 
+
+for y_val in y:
+    for x_val in x:
+        C=x_val + (y_val*1j)
+
     
