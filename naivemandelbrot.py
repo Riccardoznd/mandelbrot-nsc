@@ -21,3 +21,15 @@ height=1024
 x_step=(xmax-xmin)/(width-1)
 y_step=(ymax-ymin)/(heigth-1)
 
+#creating empty vectors
+x=[]
+y=[]
+
+#loops to generate evenly spaced vector
+for i in range(width)
+   x=xmin+(i*x_step)
+
+for i in range(heigth)
+   y=ymin+(i*y_step)
+
+    
