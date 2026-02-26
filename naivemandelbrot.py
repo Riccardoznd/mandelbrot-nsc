@@ -40,7 +40,10 @@ C=[]
 #inner loop to iterate through to real value 
 
 for y_val in y:
+    row=[]
     for x_val in x:
-        C=x_val + (y_val*1j)
+        c=x_val + (y_val*1j)
+        row.append(c)
+    C.append(row)
 
     
