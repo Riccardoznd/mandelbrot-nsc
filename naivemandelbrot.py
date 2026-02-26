@@ -14,7 +14,7 @@ ymax = 1.5
 
 #defining resolution
 width=1024
-height=1024
+heigth=1024
 
 
 #defining step size to have evenly spaced vectors
@@ -27,9 +27,9 @@ y=[]
 
 #loops to generate evenly spaced vector
 for i in range(width):
-   x.append=xmin+(i*x_step)
+   x.append(xmin+(i*x_step))
 
 for i in range(heigth):
-   y.append=ymin+(i*y_step)
+   y.append(ymin+(i*y_step))
 
     
