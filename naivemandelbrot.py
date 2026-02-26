@@ -26,10 +26,10 @@ x=[]
 y=[]
 
 #loops to generate evenly spaced vector
-for i in range(width)
-   x=xmin+(i*x_step)
+for i in range(width):
+   x.append=xmin+(i*x_step)
 
-for i in range(heigth)
-   y=ymin+(i*y_step)
+for i in range(heigth):
+   y.append=ymin+(i*y_step)
 
     
