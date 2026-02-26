@@ -31,12 +31,12 @@ max_iter=100
 #i want to loop through the whole grid
 
 for  i in range(height):
-for j in range (widht):
-z=0
-C=c[i,j]
-for n in range (0,max_iter):
-z=z*z+c
-print(z)
+    for j in range (width):
+        z=0
+        C=c[i,j]
+        for n in range (0,max_iter):
+            z=z*z+c
+            print(z)
 
 
     pass
