@@ -7,6 +7,11 @@ Course: Numerical Scientific Computing 2026
 """
 
 import matplotlib.pyplot as plt
+import time
+
+#starting the timer
+start_time=time.time()
+
 
 #defining the region
 xmin = -2.0
@@ -71,6 +76,13 @@ for row in C:
             row_values.append(max_iter)
             
     Z.append(row_values)
+
+#ending the timer
+end_time=time.time()
+
+#now i calculate the difference between strt and end, in order to measure performance
+duration=end_time-start_time
+print(f"Code Time: {duration:.4f} seconds")
 
 #i visualize the result 
 plt.figure(figsize=(10, 10))
