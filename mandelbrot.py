@@ -24,19 +24,7 @@ y=np.linspace(y_min,y_max,height)
 X,Y=np.meshgrid(x,y)
 
 #make complex numbers
-c= X +1j *Y
+C= X +1j *Y
 
-#I define the maximum interaction
-max_iter=100
-#i want to loop through the whole grid
-
-for  i in range(height):
-    for j in range (width):
-        z=0
-        C=c[i,j]
-        for n in range (0,max_iter):
-            z=z*z+c
-            print(z)
-
-
-    pass
+print(f"shape: {C.shape}") #1024,1024
+print(f"Type:{C.dtype}") #complex128
