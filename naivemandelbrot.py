@@ -6,6 +6,8 @@ Course: Numerical Scientific Computing 2026
 
 """
 
+import matplotlib.pyplot as plt
+
 #defining the region
 xmin = -2.0
 xmax = 1.0
@@ -45,5 +47,40 @@ for y_val in y:
         c=x_val + (y_val*1j)
         row.append(c)
     C.append(row)
+
+#i definine max number of iteration
+max_iter=100
+
+Z=[] #this will be the map
+
+for row in C:
+    row_values = []
+    for c in row:
+        z = 0
+        n = 0
+        
+        # Run the actual loop
+        for n in range(max_iter):
+            z = z**2 + c
+            
+            # Check for the threshold 
+            if abs(z) > 2:
+                row_values.append(n)
+                break
+        else:
+            row_values.append(max_iter)
+            
+    Z.append(row_values)
+
+#i visualize the result 
+plt.figure(figsize=(10, 10))
+plt.imshow(Z, extent=[xmin, xmax, ymin, ymax], origin='lower', cmap='hot')
+plt.title('Mandelbrot Set')
+plt.xlabel('Real Axis')
+plt.ylabel('Imaginary Axis')
+plt.show()
+
+
+
 
     
