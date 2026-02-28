@@ -40,15 +40,15 @@ M = np.zeros(C.shape, dtype=int)
 max_iter=100
 
 for n in range(max_iter):
-        z = np.abs(Z) <= 2 #z acts as a mask
-        Z[z] = Z[z]**2 + C[z]
+    z = np.abs(Z) <= 2 #z acts as a mask
+    Z[z] = Z[z]**2 + C[z]
         
-        # Increment iteration count for those points
-        M[z] += 1
+# Increment iteration count for those points
+    M[z] += 1
         
-    return M
+
 
 plt.figure(figsize=(10, 10))
-plt.imshow(M_result, extent=[-2, 1, -1.5, 1.5], origin='lower', cmap='hot')
+plt.imshow(M, extent=[-2, 1, -1.5, 1.5], origin='lower', cmap='hot')
 plt.colorbar()
 plt.show()
