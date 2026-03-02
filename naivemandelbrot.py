@@ -36,14 +36,14 @@ ymax = 1.5
 
 #defining resolution
 width=1024
-heigth=1024
+height=1024
 max_iter=100
 
 def naive_mandelbrot(xmin, xmax, ymin, ymax, width, height, max_iter):
 
     #defining step size to have evenly spaced vectors
     x_step=(xmax-xmin)/(width-1)
-    y_step=(ymax-ymin)/(heigth-1)
+    y_step=(ymax-ymin)/(height-1)
 
     #creating empty vectors
     x=[]
@@ -53,8 +53,8 @@ def naive_mandelbrot(xmin, xmax, ymin, ymax, width, height, max_iter):
     for i in range(width):
         x.append(xmin+(i*x_step))
 
-        for i in range(heigth):
-            y.append(ymin+(i*y_step))
+    for i in range(height):
+        y.append(ymin+(i*y_step))
 
     #create c=x_val*y_val*1j
 
@@ -68,7 +68,7 @@ def naive_mandelbrot(xmin, xmax, ymin, ymax, width, height, max_iter):
         for x_val in x:
             c=x_val + (y_val*1j)
             row.append(c)
-    C.append(row)
+        C.append(row)
 
 
 
@@ -88,14 +88,15 @@ def naive_mandelbrot(xmin, xmax, ymin, ymax, width, height, max_iter):
                 if abs(z) > 2:
                     row_values.append(n)
                     break
-                else:
-                    row_values.append(max_iter)
+            else:
+                row_values.append(max_iter)
             
-            Z.append(row_values)
+        Z.append(row_values)
+    return Z
 
 
 
-t,Z=naive_mandelbrot(xmin, xmax, ymin, ymax, width, height, max_iter)
+t,Z=benchmark(naive_mandelbrot,xmin, xmax, ymin, ymax, width, height, max_iter)
 
 #i visualize the result 
 plt.figure(figsize=(10, 10))
@@ -109,3 +110,4 @@ plt.show()
 
 
     
+	
