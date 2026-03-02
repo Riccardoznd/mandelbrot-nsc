@@ -16,9 +16,26 @@ y_min=-1.5
 y_max=1.5
 
 #define resolution
-width=1024
-height=1024
+width=4096
+height=4096
 max_iter=100
+
+def benchmark(func, *args, n_runs=3):
+    times = []
+    result = None
+    
+    for _ in range(n_runs):
+        t0 = time.perf_counter()           # Start timer
+        result = func(*args)               # Call the function
+        t1 = time.perf_counter()           # End timer
+        times.append(t1 - t0)              # Store elapsed time
+    
+    median_t = statistics.median(times)
+    
+    print(f"Median: {median_t:.4f}s "
+          f"(min={min(times):.4f}, max={max(times):.4f})")
+    
+    return median_t, result
 
 def my_mandelbrot(x_min, x_max, y_min, y_max, width, height, max_iter):
 
@@ -53,6 +70,7 @@ def my_mandelbrot(x_min, x_max, y_min, y_max, width, height, max_iter):
 #using now the fucntion
 M = my_mandelbrot(x_min, x_max, y_min, y_max, width, height, max_iter)
 
+t=benchmark(my_mandelbrot,x_min, x_max, y_min, y_max, width, height, max_iter)
 
 plt.figure(figsize=(10, 10))
 plt.imshow(M, extent=[-2, 1, -1.5, 1.5], origin='lower', cmap='hot')
