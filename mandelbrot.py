@@ -16,8 +16,8 @@ y_min=-1.5
 y_max=1.5
 
 #define resolution
-width=4096
-height=4096
+width=1024
+height=1024
 max_iter=100
 
 def benchmark(func, *args, n_runs=3):
@@ -37,6 +37,7 @@ def benchmark(func, *args, n_runs=3):
     
     return median_t, result
 
+@profile
 def my_mandelbrot(x_min, x_max, y_min, y_max, width, height, max_iter):
 
     #evenly spaced vectors
