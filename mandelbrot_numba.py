@@ -75,18 +75,18 @@ def mandelbrot_naive_numba(xmin, xmax, ymin, ymax, width, height, max_iter):
     return result
 
 # Warm up (triggers JIT compilation--exclude from timing)
-Warm_upA= mandelbrot_hybrid(-2, 1, -1.5, 1.5, 64, 64)
-Warm_upB= mandelbrot_naive_numba(-2, 1, -1.5, 1.5, 64, 64)
+Warm_upA= mandelbrot_hybrid(-2, 1, -1.5, 1.5, 64, 64,max_iter)
+Warm_upB= mandelbrot_naive_numba(-2, 1, -1.5, 1.5, 64, 64,max_iter)
 
-t_hybrid = bench(mandelbrot_hybrid, -2, 1, -1.5, 1.5, 1024, 1024)
-t_full = bench(mandelbrot_naive_numba, -2, 1, -1.5, 1.5, 1024, 1024)
+t_hybrid = bench(mandelbrot_hybrid, -2, 1, -1.5, 1.5, 1024, 1024,max_iter)
+t_full = bench(mandelbrot_naive_numba, -2, 1, -1.5, 1.5, 1024, 1024,max_iter)
 
 print(f"Hybrid: {t_hybrid:.3f}s")
 print(f"Fully compiled: {t_full:.3f}s")
 print(f"Ratio: {t_hybrid/t_full:.1f}x")
 #actual
 plt.figure(figsize=(10, 10))
-plt.imshow(Warm_up, extent=[-2, 1, -1.5, 1.5], origin='lower', cmap='hot')
+plt.imshow(Warm_upA, extent=[-2, 1, -1.5, 1.5], origin='lower', cmap='hot')
 plt.colorbar()
 plt.show()
 
