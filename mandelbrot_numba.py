@@ -7,6 +7,7 @@ Course: Numerical Scientific Computing 2026
 import matplotlib.pyplot as plt
 import time
 import statistics
+import numpy as np
 from numba import njit
 
 #define region boundaries
@@ -62,3 +63,13 @@ def mandelbrot_naive_numba(xmin, xmax, ymin, ymax, width, height, max_iter):
                 n += 1
             result[i, j] = n
     return result
+
+# Warm-up (triggers compilation---don’t time this!)
+Warm_up= mandelbrot_naive_numba(-2, 1,-1.5, 1.5, 64, 64,max_iter)
+
+#actual
+plt.figure(figsize=(10, 10))
+plt.imshow(Warm_up, extent=[-2, 1, -1.5, 1.5], origin='lower', cmap='hot')
+plt.colorbar()
+plt.show()
+
