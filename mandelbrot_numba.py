@@ -10,6 +10,16 @@ import statistics
 import numpy as np
 from numba import njit
 
+#benchmark fucntion as per slides
+def bench(fn, *args, runs=5):
+    fn(*args)  # extra warm-up
+    times = []
+    for _ in range(runs):
+        t0 = time.perf_counter()
+        fn(*args)
+        times.append(time.perf_counter() - t0)
+    return statistics.median(times)
+
 #define region boundaries
 x_min=-2.0
 x_max=1.0
@@ -64,9 +74,16 @@ def mandelbrot_naive_numba(xmin, xmax, ymin, ymax, width, height, max_iter):
             result[i, j] = n
     return result
 
-# Warm-up (triggers compilation---don’t time this!)
-Warm_up= mandelbrot_naive_numba(-2, 1,-1.5, 1.5, 64, 64,max_iter)
+# Warm up (triggers JIT compilation--exclude from timing)
+Warm_upA= mandelbrot_hybrid(-2, 1, -1.5, 1.5, 64, 64)
+Warm_upB= mandelbrot_naive_numba(-2, 1, -1.5, 1.5, 64, 64)
 
+t_hybrid = bench(mandelbrot_hybrid, -2, 1, -1.5, 1.5, 1024, 1024)
+t_full = bench(mandelbrot_naive_numba, -2, 1, -1.5, 1.5, 1024, 1024)
+
+print(f"Hybrid: {t_hybrid:.3f}s")
+print(f"Fully compiled: {t_full:.3f}s")
+print(f"Ratio: {t_hybrid/t_full:.1f}x")
 #actual
 plt.figure(figsize=(10, 10))
 plt.imshow(Warm_up, extent=[-2, 1, -1.5, 1.5], origin='lower', cmap='hot')
