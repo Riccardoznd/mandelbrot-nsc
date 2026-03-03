@@ -39,6 +39,7 @@ width=1024
 height=1024
 max_iter=100
 
+@profile
 def naive_mandelbrot(xmin, xmax, ymin, ymax, width, height, max_iter):
 
     #defining step size to have evenly spaced vectors
