@@ -92,13 +92,13 @@ if __name__ == "__main__":
         t_par = statistics.median(times)
         speedup = t_serial / t_par
         efficiency = (speedup / n_workers) * 100
-        print(f"{n_workers:2d} workers : {t_par:.3f} s, "
-              f"speedup = {speedup:.2f}x, eff = {efficiency:.0f}%")
+        print(f"{n_workers:2d} workers : {t_par:.3f} s, speedup = {speedup:.2f}x, eff = {efficiency:.0f}%")
 
-    N, max_iter = 1024, 100
+    # Chunk size sweep
     n_workers = 8
     X_MIN, X_MAX, Y_MIN, Y_MAX = -2.5, 1.0, -1.25, 1.25
     mandelbrot_chunk(0, 8, 8, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter)
+    
     times = []
     for _ in range(3):
         t0 = time.perf_counter()
@@ -106,7 +106,12 @@ if __name__ == "__main__":
         times.append(time.perf_counter() - t0)
     t_serial = statistics.median(times)
     print(f"Serial: {t_serial:.3f}s")
+    
     tiny = [(0, 8, 8, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter)]
+    
+    # Store results for plotting
+    chunk_sweep_results = {'n_chunks': [], 'times': [], 'lif': [], 'speedup': []}
+    
     for mult in [1, 2, 4, 8, 16]:
         n_chunks = mult * n_workers
         with Pool(processes=n_workers) as pool:
@@ -119,7 +124,35 @@ if __name__ == "__main__":
                 times.append(time.perf_counter() - t0)
         t_par = statistics.median(times)
         lif = n_workers * t_par / t_serial - 1
-        print(f"{n_chunks:4d} chunks {t_par:.3f}s {t_serial/t_par:.1f}x LIF={lif:.2f}")
+        speedup = t_serial / t_par
+        print(f"{n_chunks:4d} chunks {t_par:.3f}s {speedup:.1f}x LIF={lif:.2f}")
+        
+        # Store for plotting
+        chunk_sweep_results['n_chunks'].append(n_chunks)
+        chunk_sweep_results['times'].append(t_par)
+        chunk_sweep_results['lif'].append(lif)
+        chunk_sweep_results['speedup'].append(speedup)
+
+    # Create the chunk sweep graph
+    fig, ax = plt.subplots(figsize=(10, 6))
+    
+    # Plot parallel measured times
+    ax.plot(chunk_sweep_results['n_chunks'], chunk_sweep_results['times'], 
+            'o-', label='parallel (measured)', linewidth=2, markersize=8)
+    
+    # Plot serial baseline as horizontal dashed line
+    ax.axhline(y=t_serial, color='gray', linestyle='--', linewidth=2, 
+               label=f'serial ({t_serial:.3f}s)')
+    
+    ax.set_xlabel('n_chunks (n_workers=8)', fontsize=12)
+    ax.set_ylabel('Wall time (s)', fontsize=12)
+    ax.set_title(f'Mandelbrot: chunk count sweep\n(N={N}, max_iter={max_iter}, n_workers={n_workers})', 
+                 fontsize=14)
+    ax.legend(loc='upper right', fontsize=10)
+    ax.grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    plt.show()
 
     final_image = mandelbrot_serial(N, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter)
     plt.imshow(final_image, extent=[X_MIN, X_MAX, Y_MIN, Y_MAX],
