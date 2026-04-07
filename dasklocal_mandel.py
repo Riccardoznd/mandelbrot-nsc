@@ -6,6 +6,7 @@ import os
 import statistics
 import matplotlib.pyplot as plt
 from pathlib import Path
+import dask
 from dask import delayed
 from dask.distributed import Client, LocalCluster
 
@@ -53,6 +54,21 @@ if __name__ == '__main__':
     client = Client(cluster)
     client.run(lambda: mandelbrot_chunk(0, 8, 8, X_MIN, X_MAX,
                                         Y_MIN, Y_MAX, 10))
+
+chunk_sizes = [16, 32, 64, 128, 256, 512]
+    results_data = []  # Store (n_chunks, median_time) for plotting
+    
+    for n_chunks in chunk_sizes:
+        times = []
+        for _ in range(3):  # 3 runs for median
+            t0 = time.perf_counter()
+            result = mandelbrot_dask(N, X_MIN, X_MAX, Y_MIN, Y_MAX, 
+                                    max_iter, n_chunks=n_chunks)
+            times.append(time.perf_counter() - t0)
+        
+        median_time = statistics.median(times)
+        print(f"n_chunks={n_chunks}: {median_time:.3f} s")
+        results_data.append((n_chunks, median_time))
     times = []
     for _ in range(3):
         t0 = time.perf_counter()
@@ -61,3 +77,7 @@ if __name__ == '__main__':
     print(f"Dask local(n_chunks=32): {statistics.median(times):.3f} s")
     client.close()
     cluster.close()
+
+plt.figure(figsize=(8, 8))
+plt.imshow(result, extent=[X_MIN, X_MAX, Y_MIN, Y_MAX], cmap='hot', origin='lower')
+plt.close()
