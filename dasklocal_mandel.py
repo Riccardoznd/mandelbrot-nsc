@@ -10,7 +10,7 @@ import dask
 from dask import delayed
 from dask.distributed import Client, LocalCluster
 
-@njit(cache=True) #avoids python overhead for this function
+@njit(cache=True)
 def mandelbrot_pixel(c_real, c_imag, max_iter):
     z_real = z_imag = 0.0
     for i in range(max_iter):
@@ -22,7 +22,7 @@ def mandelbrot_pixel(c_real, c_imag, max_iter):
         z_real = zr2 - zi2 + c_real
     return max_iter
 
-@njit(cache=True)# cache=True: saves compiled code to disk so workers load instead of re-compiling
+@njit(cache=True)
 def mandelbrot_chunk(row_start, row_end, N,
                      x_min, x_max, y_min, y_max, max_iter):
     out = np.empty((row_end - row_start, N), dtype=np.int32)
@@ -55,12 +55,12 @@ if __name__ == '__main__':
     client.run(lambda: mandelbrot_chunk(0, 8, 8, X_MIN, X_MAX,
                                         Y_MIN, Y_MAX, 10))
 
-chunk_sizes = [16, 32, 64, 128, 256, 512]
-    results_data = []  # Store (n_chunks, median_time) for plotting
+    chunk_sizes = [16, 32, 64, 128, 256, 512]
+    results_data = []
     
     for n_chunks in chunk_sizes:
         times = []
-        for _ in range(3):  # 3 runs for median
+        for _ in range(3):
             t0 = time.perf_counter()
             result = mandelbrot_dask(N, X_MIN, X_MAX, Y_MIN, Y_MAX, 
                                     max_iter, n_chunks=n_chunks)
@@ -69,15 +69,10 @@ chunk_sizes = [16, 32, 64, 128, 256, 512]
         median_time = statistics.median(times)
         print(f"n_chunks={n_chunks}: {median_time:.3f} s")
         results_data.append((n_chunks, median_time))
-    times = []
-    for _ in range(3):
-        t0 = time.perf_counter()
-        result = mandelbrot_dask(N, X_MIN, X_MAX, Y_MIN, Y_MAX, max_iter)
-        times.append(time.perf_counter() - t0)
-    print(f"Dask local(n_chunks=32): {statistics.median(times):.3f} s")
+    
+    plt.figure(figsize=(8, 8))
+    plt.imshow(result, extent=[X_MIN, X_MAX, Y_MIN, Y_MAX], cmap='hot', origin='lower')
+    plt.close()
+    
     client.close()
     cluster.close()
-
-plt.figure(figsize=(8, 8))
-plt.imshow(result, extent=[X_MIN, X_MAX, Y_MIN, Y_MAX], cmap='hot', origin='lower')
-plt.close()
