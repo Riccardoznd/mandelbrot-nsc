@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import dask
 from dask import delayed
-from dask.distributed import Client
+from dask.distributed import Client, LocalCluster
 
 @njit(cache=True)
 def mandelbrot_pixel(c_real, c_imag, max_iter):
