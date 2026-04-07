@@ -48,9 +48,11 @@ def mandelbrot_dask(N, x_min, x_max, y_min, y_max,
 
 
 if __name__ == '__main__':
-    N, max_iter = 1024, 100
+    N, max_iter = 4096, 100
     X_MIN, X_MAX, Y_MIN, Y_MAX = -2.5, 1.0, -1.25, 1.25
-    cluster = LocalCluster(n_workers=8, threads_per_worker=1)
+    p_workers = 8
+    
+    cluster = LocalCluster(n_workers=p_workers, threads_per_worker=1)
     client = Client(cluster)
     client.run(lambda: mandelbrot_chunk(0, 8, 8, X_MIN, X_MAX,
                                         Y_MIN, Y_MAX, 10))
@@ -70,8 +72,49 @@ if __name__ == '__main__':
         print(f"n_chunks={n_chunks}: {median_time:.3f} s")
         results_data.append((n_chunks, median_time))
     
+    cluster_single = LocalCluster(n_workers=1, threads_per_worker=1)
+    client_single = Client(cluster_single)
+    client_single.run(lambda: mandelbrot_chunk(0, 8, 8, X_MIN, X_MAX,
+                                               Y_MIN, Y_MAX, 10))
+    t1_times = []
+    for _ in range(3):
+        t0 = time.perf_counter()
+        _ = mandelbrot_dask(N, X_MIN, X_MAX, Y_MIN, Y_MAX, 
+                           max_iter, n_chunks=32)
+        t1_times.append(time.perf_counter() - t0)
+    T1 = statistics.median(t1_times)
+    client_single.close()
+    cluster_single.close()
+    
+    lif_data = []
+    for n_chunks, Tp in results_data:
+        lif = p_workers * Tp / T1 - 1
+        lif_data.append((n_chunks, lif))
+    
+    optimal_idx = np.argmin([r[1] for r in results_data])
+    n_chunks_optimal = results_data[optimal_idx][0]
+    t_min = results_data[optimal_idx][1]
+    LIF_min = lif_data[optimal_idx][1]
+    print(f"n_chunks_optimal={n_chunks_optimal}, t_min={t_min:.3f} s, LIF_min={LIF_min:.3f}")
+    
+    result_optimal = mandelbrot_dask(N, X_MIN, X_MAX, Y_MIN, Y_MAX, 
+                                     max_iter, n_chunks=n_chunks_optimal)
     plt.figure(figsize=(8, 8))
-    plt.imshow(result, extent=[X_MIN, X_MAX, Y_MIN, Y_MAX], cmap='hot', origin='lower')
+    plt.imshow(result_optimal, extent=[X_MIN, X_MAX, Y_MIN, Y_MAX], cmap='hot', origin='lower')
+    plt.savefig(f'mandelbrot_dask_chunks{n_chunks_optimal}.png', dpi=150, bbox_inches='tight')
+    plt.close()
+    
+    chunk_sizes_plot = [r[0] for r in results_data]
+    times_plot = [r[1] for r in results_data]
+    
+    plt.figure(figsize=(8, 5))
+    plt.plot(chunk_sizes_plot, times_plot, marker='o', linewidth=2)
+    plt.xscale('log')
+    plt.xlabel('n_chunks (log scale)')
+    plt.ylabel('Wall time (s)')
+    plt.title('Dask Local: Chunk Size Sweep')
+    plt.grid(True, alpha=0.3, which='both')
+    plt.savefig('dask_chunk_sweep.png', dpi=150, bbox_inches='tight')
     plt.close()
     
     client.close()
